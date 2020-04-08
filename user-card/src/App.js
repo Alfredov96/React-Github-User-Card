@@ -1,5 +1,7 @@
 import React from 'react';
-import axios from 'axios'
+import axios from 'axios';
+import Card from './Card';
+import MyCard from './MyCard'
 import './App.css';
 
 
@@ -8,47 +10,66 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      git: []
+      git: [], followers: []
     };
   }
 
   componentDidMount() {
-    axios.get("https://api.github.com/users/Alfredov96").then(response => {console.log('my git info', response)
+    axios.get(`https://api.github.com/users/Alfredov96`).then(response => {console.log('my git info', response.data)
       this.setState({
-        git: response.data.message,
-        gitName: ""
+        git: response.data
       });
-    });
+    })
+    .catch(error => {
+      console.log('error', error)
+    })
+    axios
+      .get("https://api.github.com/users/Alfredov96/followers")
+      .then(response => {console.log('my git followers info', response.data)
+        this.setState({ followers: response.data });
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
   }
 
+  // fetchGit = event => {
+  //   event.preventDefault();
+  //   axios
+  //     .get(`https://api.github.com/users/Alfredov96/${this.state.gitName}`)
+  //     .then(res => {
+  //       this.setState({ git: res.data.message });
+  //     });
+  // };
 
-  handleChange = event => {
-    this.setState({
-      gitFollowers: event.target.value
-    });
-  };
+  // handleChange = event => {
+  //   this.setState({
+  //     gitFollowers: event.target.value
+  //   });
+  // };
 
-  fetchGit = event => {
-    event.preventDefault();
-    axios
-      .get(`https://api.github.com/users/Alfredov96/followers`)
-      .then(res => {
-        this.setState({ git: res.data.message });
-      });
-  };
+  
   render() {
     return (
       <div className="App">
         <h1>It Worked!!</h1>
-        <input
+        {/* <input
           type="text"
-          value={this.state.gitFollowers}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.fetchGit}>grab followers</button>
-        <div className="">
-          {this.state.git.map(follower => (
-            <img width="200" src={follower} key={follower} alt={follower} />
+          value={this.state.followers}
+          // onChange={this.handleChange}
+        /> */}
+        <div className="git">
+          <MyCard 
+            name={this.state.git.login}
+            img={this.state.git.avatar_url}
+          />
+          {this.state.followers.map(follower => (
+          <Card
+            // data={tfollower}
+            name={follower.login}
+            img={follower.avatar_url}
+          />
+          
           ))}
         </div>
       </div>
@@ -57,3 +78,7 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+
+{/* <img width="200" src={follower.avatar_url} key={follower.id} /> */}
